@@ -55,6 +55,12 @@ class IOLoopKernelManager(KernelManager):
             if self._restarter is not None:
                 self._restarter.stop()
 
+    def restart_kernel(self, now=False, newports=False, **kw):
+        super().restart_kernel(now=now, newports=newports, **kw)
+
+        if self.has_kernel and self._restarter is not None:
+            self._restarter.fire_callbacks('restart')
+
     connect_shell = as_zmqstream(KernelManager.connect_shell)
     connect_control = as_zmqstream(KernelManager.connect_control)
     connect_iopub = as_zmqstream(KernelManager.connect_iopub)
@@ -94,6 +100,12 @@ class AsyncIOLoopKernelManager(AsyncKernelManager):
         if self.autorestart:
             if self._restarter is not None:
                 self._restarter.stop()
+
+    async def restart_kernel(self, now=False, newports=False, **kw):
+        await super().restart_kernel(now=now, newports=newports, **kw)
+
+        if self.has_kernel and self._restarter is not None:
+            self._restarter.fire_callbacks('restart')
 
     connect_shell = as_zmqstream(AsyncKernelManager.connect_shell)
     connect_control = as_zmqstream(AsyncKernelManager.connect_control)

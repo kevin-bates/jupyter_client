@@ -70,7 +70,7 @@ class AsyncIOLoopKernelRestarter(IOLoopKernelRestarter):
                     self.restart_limit,
                     'new' if newports else 'keep'
                 )
-                self._fire_callbacks('restart')
+                # 'restart' callback now fired from IOLoopKernelManager
                 await self.kernel_manager.restart_kernel(now=True, newports=newports)
                 self._restarting = True
         else:

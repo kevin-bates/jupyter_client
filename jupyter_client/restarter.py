@@ -79,10 +79,17 @@ class KernelRestarter(LoggingConfigurable):
         except ValueError:
             pass
 
+    def fire_callbacks(self, event):
+        """fire callbacks registered for a particular event"""
+
+        # public facade to formerly private method
+        self._fire_callbacks(event)
+
     def _fire_callbacks(self, event):
         """fire our callbacks for a particular event"""
         for callback in self.callbacks[event]:
             try:
+                self.log.debug("KernelRestarter: firing callback for event: {}!")
                 callback()
             except Exception as e:
                 self.log.error("KernelRestarter: %s callback %r failed", event, callback, exc_info=True)
@@ -109,7 +116,7 @@ class KernelRestarter(LoggingConfigurable):
                     self.restart_limit,
                     'new' if newports else 'keep'
                 )
-                self._fire_callbacks('restart')
+                # 'restart' callback now fired from IOLoopKernelManager
                 self.kernel_manager.restart_kernel(now=True, newports=newports)
                 self._restarting = True
         else:
